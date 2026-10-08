@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crash Course 计算机科学 · 学习笔记</title>
+<style>
+  :root {
+    --bg: #0f0e17;
+    --surface: #1a1923;
+    --surface2: #232132;
+    --accent: #e45858;
+    --accent2: #6c63ff;
+    --accent3: #43d9ad;
+    --text: #fffffe;
+    --text-dim: #a7a9be;
+    --border: rgba(255,255,255,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    padding: 0;
+  }
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #1a1923 0%, #2a1f3d 50%, #1a1923 100%);
+    padding: 60px 24px 50px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -10%;
+    width: 60%; height: 200%;
+    background: radial-gradient(ellipse, rgba(108,99,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -30%; right: -10%;
+    width: 50%; height: 200%;
+    background: radial-gradient(ellipse, rgba(228,88,88,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, var(--accent3), var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+  }
+  .hero .subtitle {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+  .hero .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+  }
+  .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .meta-badge strong { color: var(--text); }
+
+  /* Container */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Section Header */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 56px 0 28px;
+  }
+  .section-num {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--bg);
+  }
+  .section-header h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .section-header .section-sub {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Episode Card */
+  .ep-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .ep-card:hover {
+    border-color: rgba(108,99,255,0.3);
+    transform: translateY(-2px);
+  }
+  .ep-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .ep-num {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--bg);
+  }
+  .ep-title {
+    font-size: 1.12rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .ep-body h4 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    margin-top: 18px;
+  }
+  .ep-body h4:first-child { margin-top: 0; }
+  .ep-body ul {
+    list-style: none;
+    padding: 0;
+  }
+  .ep-body li {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 8px;
+    font-size: 0.93rem;
+    color: rgba(255,255,254,0.88);
+    line-height: 1.65;
+  }
+  .ep-body li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 11px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .terms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .term {
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .term strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* Color themes per section */
+  .theme-1 .section-num, .theme-1 .ep-num { background: var(--accent3); }
+  .theme-1 .ep-body li::before { background: var(--accent3); }
+  .theme-1 .ep-card:hover { border-color: rgba(67,217,173,0.3); }
+
+  .theme-2 .section-num, .theme-2 .ep-num { background: var(--accent2); }
+  .theme-2 .ep-body li::before { background: var(--accent2); }
+  .theme-2 .ep-card:hover { border-color: rgba(108,99,255,0.3); }
+
+  .theme-3 .section-num, .theme-3 .ep-num { background: #f0a060; }
+  .theme-3 .ep-body li::before { background: #f0a060; }
+  .theme-3 .ep-card:hover { border-color: rgba(240,160,96,0.3); }
+
+  .theme-4 .section-num, .theme-4 .ep-num { background: var(--accent); }
+  .theme-4 .ep-body li::before { background: var(--accent); }
+  .theme-4 .ep-card:hover { border-color: rgba(228,88,88,0.3); }
+
+  .theme-5 .section-num, .theme-5 .ep-num { background: #c792ea; }
+  .theme-5 .ep-body li::before { background: #c792ea; }
+  .theme-5 .ep-card:hover { border-color: rgba(199,146,234,0.3); }
+
+  .theme-6 .section-num, .theme-6 .ep-num { background: #43d9ad; }
+  .theme-6 .ep-body li::before { background: #43d9ad; }
+
+  .theme-7 .section-num, .theme-7 .ep-num { background: #e45858; }
+  .theme-7 .ep-body li::before { background: #e45858; }
+
+  .theme-8 .section-num, .theme-8 .ep-num { background: #6c63ff; }
+  .theme-8 .ep-body li::before { background: #6c63ff; }
+
+  .theme-9 .section-num, .theme-9 .ep-num { background: #f0a060; }
+  .theme-9 .ep-body li::before { background: #f0a060; }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+  .toc h3 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    text-decoration: none;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    transition: background 0.2s, color 0.2s;
+  }
+  .toc-item:hover {
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+  }
+  .toc-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+  .footer a {
+    color: var(--accent3);
+    text-decoration: none;
+  }
+
+  /* Tip Box */
+  .tip-box {
+    background: linear-gradient(135deg, rgba(108,99,255,0.08), rgba(67,217,173,0.08));
+    border: 1px solid rgba(108,99,255,0.2);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin: 30px 0;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+  .tip-box strong { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.6rem; }
+    .container { padding: 20px 16px 60px; }
+    .ep-card { padding: 18px 20px; }
+    .ep-title { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>Crash Course 计算机科学</h1>
+  <p class="subtitle">学习笔记 · 40集全套核心知识点</p>
+  <div class="meta">
+    <span class="meta-badge">主讲 <strong>Carrie Anne Philbin</strong></span>
+    <span class="meta-badge">共 <strong>40集</strong> · 约 <strong>8小时</strong></span>
+    <span class="meta-badge">每集约 <strong>10分钟</strong></span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h3>目录 · 九大板块</h3>
+    <div class="toc-grid">
+      <a class="toc-item" href="#part1"><span class="toc-dot" style="background:#43d9ad"></span>计算的起源 (Ep 1-2)</a>
+      <a class="toc-item" href="#part2"><span class="toc-dot" style="background:#6c63ff"></span>底层原理 (Ep 3-9)</a>
+      <a class="toc-item" href="#part3"><span class="toc-dot" style="background:#f0a060"></span>编程的世界 (Ep 10-16)</a>
+      <a class="toc-item" href="#part4"><span class="toc-dot" style="background:#e45858"></span>系统与架构 (Ep 17-22)</a>
+      <a class="toc-item" href="#part5"><span class="toc-dot" style="background:#c792ea"></span>图形与个人电脑 (Ep 23-27)</a>
+      <a class="toc-item" href="#part6"><span class="toc-dot" style="background:#43d9ad"></span>网络与互联网 (Ep 28-30)</a>
+      <a class="toc-item" href="#part7"><span class="toc-dot" style="background:#e45858"></span>安全 (Ep 31-33)</a>
+      <a class="toc-item" href="#part8"><span class="toc-dot" style="background:#6c63ff"></span>人工智能与机器人 (Ep 34-37)</a>
+      <a class="toc-item" href="#part8"><span class="toc-dot" style="background:#f0a060"></span>人机交互与未来 (Ep 38-40)</a>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <strong>使用建议：</strong>每天看2集（约20分钟），边看边对照笔记。看不懂的地方先跳过，笔记里的关键词先有个印象就行，不用死记。
+  </div>
+
+  <!-- ============ PART 1 ============ -->
+  <div id="part1" class="theme-1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div>
+        <h2>计算的起源</h2>
+        <div class="section-sub">Ep 1-2 · 计算机是怎么来的</div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">01</div>
+        <div class="ep-title">Early Computing — 早期计算</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>计算机的本质是「处理信息」，人类几千年前就在做这件事——算盘、星图、历法都是计算</li>
+          <li>最早的计算工具是<strong>算盘（Abacus）</strong>，公元前2700年就有了</li>
+          <li>1614年，John Napier 发明<strong>对数（Logarithms）</strong>，把乘法变成加法，大大简化计算</li>
+          <li>1822年，Charles Babbage 提出<strong>差分机（Difference Engine）</strong>：用齿轮做多项式运算</li>
+          <li>Babbage 后来设计了<strong>分析机（Analytical Engine）</strong>：包含内存、CPU、程序的完整概念，但没建成</li>
+          <li>Ada Lovelace 为分析机写了第一个算法，被认为是<strong>第一位程序员</strong></li>
+          <li>1890年美国人口普查用<strong>打孔卡片（Hollerith 的机器）</strong>，后来成为 IBM 公司的基础</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Abacus</strong> 算盘</span>
+          <span class="term"><strong>Difference Engine</strong> 差分机</span>
+          <span class="term"><strong>Analytical Engine</strong> 分析机</span>
+          <span class="term"><strong>Punch Card</strong> 打孔卡片</span>
+          <span class="term"><strong>Ada Lovelace</strong> 第一位程序员</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">02</div>
+        <div class="ep-title">Electronic Computing — 电子计算</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>20世纪最大的计算需求来自<strong>军事</strong>：弹道计算表、密码破译</li>
+          <li>1943年，Colossus（巨人计算机）在英国建成，用于破译德国 Lorenz 密码，是第一台<strong>可编程电子数字计算机</strong></li>
+          <li>1945年，ENIAC 在美国宾夕法尼亚大学建成，重30吨，用<strong>真空管（Vacuum Tubes）</strong>代替机械齿轮</li>
+          <li>Grace Hopper 发现了一只飞蛾卡在继电器里，创造了 <strong>"Bug"</strong> 和 <strong>"Debug"</strong> 这两个词</li>
+          <li>1947年贝尔实验室发明<strong>晶体管（Transistor）</strong>，取代真空管，体积更小、更可靠、更省电</li>
+          <li>晶体管是所有现代电子设备的基础</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Vacuum Tube</strong> 真空管</span>
+          <span class="term"><strong>ENIAC</strong> 第一台通用电子计算机</span>
+          <span class="term"><strong>Transistor</strong> 晶体管</span>
+          <span class="term"><strong>Grace Hopper</strong> Bug/Debug 词源</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PART 2 ============ -->
+  <div id="part2" class="theme-2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div>
+        <h2>计算机的底层原理</h2>
+        <div class="section-sub">Ep 3-9 · 从逻辑门到CPU，计算机到底怎么运作</div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">03</div>
+        <div class="ep-title">Boolean Logic & Logic Gates — 布尔逻辑与逻辑门</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>George Boole 在1854年提出<strong>布尔代数（Boolean Algebra）</strong>：用 True/False 做逻辑运算</li>
+          <li>三个基本操作：<strong>NOT</strong>（非）、<strong>AND</strong>（与）、<strong>OR</strong>（或）</li>
+          <li>用晶体管可以实现这些逻辑操作 → <strong>逻辑门（Logic Gate）</strong></li>
+          <li>NOT门：一个晶体管，输入开 → 输出关，输入关 → 输出开</li>
+          <li>AND门：两个晶体管串联，都开才输出开</li>
+          <li>OR门：两个晶体管并联，任一开就输出开</li>
+          <li>还有<strong>XOR（异或）</strong>：两个输入不同时才为 True，这个后面做加法器要用</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Boolean Algebra</strong> 布尔代数</span>
+          <span class="term"><strong>NOT / AND / OR</strong> 基本逻辑门</span>
+          <span class="term"><strong>XOR</strong> 异或门</span>
+          <span class="term"><strong>Transistor</strong> 实现逻辑门的物理基础</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">04</div>
+        <div class="ep-title">Representing Numbers and Letters with Binary — 二进制表示数字和字母</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>计算机只用 <strong>0 和 1</strong>（开和关），所以用<strong>二进制（Binary）</strong>计数</li>
+          <li>1个0或1叫 <strong>1 bit</strong>（比特），8个bit = <strong>1 byte</strong>（字节）</li>
+          <li>二进制每一位代表 2 的幂：1, 2, 4, 8, 16, 32, 64, 128</li>
+          <li>1 byte 可以表示 0-255（256种状态）</li>
+          <li><strong>负数</strong>：用最高位当符号位（0正1负），或用补码</li>
+          <li><strong>小数</strong>：用浮点数（Floating Point），类似科学计数法</li>
+          <li><strong>文字</strong>：ASCII 编码（1963年），每个字母/符号对应一个数字。A=65, a=97, 0=48</li>
+          <li>ASCII 只有128个字符，后来扩展为 <strong>Unicode</strong>，支持全世界所有文字</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Binary</strong> 二进制</span>
+          <span class="term"><strong>Bit / Byte</strong> 比特 / 字节</span>
+          <span class="term"><strong>ASCII</strong> 美国信息交换标准代码</span>
+          <span class="term"><strong>Unicode</strong> 统一编码</span>
+          <span class="term"><strong>Floating Point</strong> 浮点数</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">05</div>
+        <div class="ep-title">How Computers Calculate — the ALU — 计算机如何计算：算术逻辑单元</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>计算机的核心运算部件叫 <strong>ALU（Arithmetic Logic Unit，算术逻辑单元）</strong></li>
+          <li>ALU 由两部分组成：<strong>算术单元</strong>（做加减乘等数学运算）和<strong>逻辑单元</strong>（做 AND/OR/NOT 等逻辑判断）</li>
+          <li>用 XOR 门 + AND 门可以做出<strong>半加器（Half Adder）</strong>：两个1位二进制相加</li>
+          <li>两个半加器 + OR 门 = <strong>全加器（Full Adder）</strong>：能处理进位</li>
+          <li>把8个全加器连起来 = <strong>8位加法器</strong>，可以做两个8位数的加法</li>
+          <li>ALU 还有溢出检测（Overflow）：结果超出位数范围时标记</li>
+          <li>ALU 用一个特殊的<strong>标志位（Flags）</strong>输出额外信息：Zero（结果是否为0）、Negative（是否为负）、Overflow（是否溢出）</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>ALU</strong> 算术逻辑单元</span>
+          <span class="term"><strong>Half Adder</strong> 半加器</span>
+          <span class="term"><strong>Full Adder</strong> 全加器</span>
+          <span class="term"><strong>Overflow</strong> 溢出</span>
+          <span class="term"><strong>Flags</strong> 标志位</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">06</div>
+        <div class="ep-title">Registers and RAM — 寄存器和内存</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>计算机需要<strong>存储</strong>数据的地方，分两种：<strong>寄存器</strong>（少量、CPU内部）和 <strong>RAM</strong>（大量、独立芯片）</li>
+          <li>存储的基本单元是<strong>锁存器（Latch）</strong>：能记住1位信息（0或1），用 OR 门 + 回路实现</li>
+          <li>加上控制线 → <strong>门控锁存器（Gated Latch）</strong>：可以控制何时写入</li>
+          <li>把多个锁存器排成一行 = <strong>寄存器（Register）</strong>：一次存一个完整的数（如8位寄存器存8位）</li>
+          <li>大量锁存器用<strong>矩阵排列</strong> + 地址线选择 = <strong>RAM（Random Access Memory）</strong></li>
+          <li>RAM 是「易失性」的——断电就丢失数据</li>
+          <li>16x16 的锁存器矩阵 = 256个地址，每个地址存1位，用8位地址线选择</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Latch</strong> 锁存器</span>
+          <span class="term"><strong>Register</strong> 寄存器</span>
+          <span class="term"><strong>RAM</strong> 随机存取存储器</span>
+          <span class="term"><strong>Address</strong> 地址</span>
+          <span class="term"><strong>Volatile</strong> 易失性</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">07</div>
+        <div class="ep-title">The Central Processing Unit (CPU) — 中央处理器</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>CPU</strong> 是计算机的大脑，把 ALU + 寄存器 + 控制单元组合在一起</li>
+          <li>CPU 的工作循环（<strong>指令周期</strong>）：
+            <strong>取指（Fetch）</strong>→ <strong>解码（Decode）</strong>→ <strong>执行（Execute）</strong>
+          </li>
+          <li>取指：从内存（RAM）读取一条指令到CPU</li>
+          <li>解码：指令用<strong>操作码（Opcode）</strong>指定做什么操作，后面可以跟操作数（数据地址）</li>
+          <li>执行：控制单元根据操作码指挥 ALU 做运算，或读写内存</li>
+          <li>有一个特殊的寄存器叫<strong>程序计数器（Program Counter）</strong>，记录下一条指令的地址，每执行一条自动+1</li>
+          <li>时钟（Clock）提供稳定节拍，CPU 速度用 <strong>Hz / GHz</strong> 衡量（每秒多少个周期）</li>
+          <li>现代 CPU 有<strong>流水线（Pipelining）</strong>：同时处理多条指令的不同阶段</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>CPU</strong> 中央处理器</span>
+          <span class="term"><strong>Fetch-Decode-Execute</strong> 取指-解码-执行</span>
+          <span class="term"><strong>Opcode</strong> 操作码</span>
+          <span class="term"><strong>Program Counter</strong> 程序计数器</span>
+          <span class="term"><strong>Clock Speed</strong> 时钟频率</span>
+          <span class="term"><strong>Pipelining</strong> 流水线</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">08</div>
+        <div class="ep-title">Instructions & Programs — 指令与程序</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>指令集（Instruction Set）</strong>是CPU能理解的所有操作码列表</li>
+          <li>常见指令类型：
+            <strong>LOAD</strong>（从内存读数据到寄存器）、
+            <strong>STORE</strong>（把寄存器数据写入内存）、
+            <strong>ADD / SUB</strong>（加减运算）、
+            <strong>JUMP</strong>（跳转到另一个地址执行）</li>
+          <li><strong>条件跳转（JUMP IF）</strong>：根据标志位决定是否跳转 → 这是实现 <strong>if/else 和循环</strong>的基础</li>
+          <li>把一系列指令排列好 = <strong>程序</strong></li>
+          <li>程序和数据都存在同一个内存里（<strong>冯·诺依曼架构</strong> Von Neumann Architecture）</li>
+          <li>Alan Turing 提出的 Turing Complete 概念：任何能做条件跳转和读写的设备，理论上可以计算任何可计算的问题</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Instruction Set</strong> 指令集</span>
+          <span class="term"><strong>LOAD / STORE</strong> 读写内存</span>
+          <span class="term"><strong>JUMP</strong> 跳转指令</span>
+          <span class="term"><strong>Von Neumann Architecture</strong> 冯·诺依曼架构</span>
+          <span class="term"><strong>Turing Complete</strong> 图灵完备</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">09</div>
+        <div class="ep-title">Advanced CPU Designs — 高级CPU设计</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>让CPU更快的方法不只是提高时钟频率，还可以<strong>并行处理</strong></li>
+          <li><strong>流水线（Pipelining）</strong>：把指令分成几个阶段，不同指令的不同阶段同时进行（像工厂流水线）</li>
+          <li><strong>超标量架构（Superscalar）</strong>：CPU有多个ALU，同时执行多条指令</li>
+          <li><strong>多核（Multi-core）</strong>：一个芯片上有多个CPU核心，真正的并行</li>
+          <li><strong>分支预测（Branch Prediction）</strong>：CPU猜 if 条件会走哪个分支，提前执行。猜对了就快，猜错了要回滚</li>
+          <li><strong>乱序执行（Out-of-Order Execution）</strong>：不按程序顺序执行，而看哪条指令的数据准备好了就先执行</li>
+          <li>现代CPU还有<strong>缓存（Cache）</strong>：L1/L2/L3 多级缓存，比 RAM 快得多</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Pipelining</strong> 流水线</span>
+          <span class="term"><strong>Superscalar</strong> 超标量</span>
+          <span class="term"><strong>Multi-core</strong> 多核</span>
+          <span class="term"><strong>Branch Prediction</strong> 分支预测</span>
+          <span class="term"><strong>Cache</strong> 缓存</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PART 3 ============ -->
+  <div id="part3" class="theme-3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div>
+        <h2>编程的世界</h2>
+        <div class="section-sub">Ep 10-16 · 从最早的编程到软件工程</div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">10</div>
+        <div class="ep-title">Early Programming — 早期编程</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>最早的编程方式是<strong>打孔卡片</strong>：卡片上的孔代表指令和数据，机器读取孔的有无</li>
+          <li>Jacquard 织布机（1804年）用打孔卡片控制织布图案，是最早的"编程"概念</li>
+          <li>Herman Hollerith 的打孔卡片制表机用于1890年美国人口普查</li>
+          <li><strong>插线板（Plugboard）</strong>：通过插线来编程，ENIAC 就是这样工作的，换程序要重新接线</li>
+          <li><strong>冯·诺依曼架构</strong>的提出：把程序也存在内存里，不用每次重新接线</li>
+          <li>程序从此可以像数据一样被修改——这是现代计算机的基础</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Punch Card</strong> 打孔卡片</span>
+          <span class="term"><strong>Plugboard</strong> 插线板</span>
+          <span class="term"><strong>Stored Program</strong> 存储程序</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">11</div>
+        <div class="ep-title">The First Programming Languages — 最早的编程语言</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>直接用二进制写指令 = <strong>机器语言（Machine Language）</strong>，对人类极不友好</li>
+          <li><strong>汇编语言（Assembly Language）</strong>：用简短的英文缩写代替二进制（如 ADD, MOV, JMP）</li>
+          <li>汇编器（Assembler）把汇编代码翻译成机器语言</li>
+          <li>Grace Hopper 发明了第一个<strong>编译器（Compiler）</strong>：把更接近英语的代码翻译成机器语言</li>
+          <li><strong>编译型语言</strong>：先全部翻译成机器码再执行（如C语言）</li>
+          <li><strong>解释型语言</strong>：逐行翻译逐行执行（如Python）</li>
+          <li>1957年 <strong>FORTRAN</strong>：第一个广泛使用的高级语言，用于科学计算</li>
+          <li>1959年 <strong>COBOL</strong>：用于商业数据处理</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Machine Language</strong> 机器语言</span>
+          <span class="term"><strong>Assembly</strong> 汇编语言</span>
+          <span class="term"><strong>Compiler</strong> 编译器</span>
+          <span class="term"><strong>FORTRAN / COBOL</strong> 早期高级语言</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">12</div>
+        <div class="ep-title">Programming Basics — Statements & Functions — 编程基础：语句与函数</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>语法（Syntax）</strong>：编程语言的语法规则，像英语的语法</li>
+          <li><strong>赋值语句（Assignment Statement）</strong>：把值赋给变量，如 a = 5</li>
+          <li><strong>控制流（Control Flow）</strong>：if/else 条件判断，for/while 循环</li>
+          <li><strong>函数（Function）</strong>：把一段代码打包，取个名字，可以反复调用</li>
+          <li>函数的<strong>参数（Arguments）</strong>：输入给函数的数据</li>
+          <li>函数的<strong>返回值（Return Value）</strong>：函数执行完输出的结果</li>
+          <li><strong>模块化编程（Modularity）</strong>：把大问题分解成小函数，降低复杂度</li>
+          <li>好的函数应该是<strong>一个函数只做一件事</strong></li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Syntax</strong> 语法</span>
+          <span class="term"><strong>Variable</strong> 变量</span>
+          <span class="term"><strong>Function</strong> 函数</span>
+          <span class="term"><strong>Control Flow</strong> 控制流</span>
+          <span class="term"><strong>Modularity</strong> 模块化</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">13</div>
+        <div class="ep-title">Intro to Algorithms — 算法入门</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>算法（Algorithm）</strong>：解决问题的步骤，是精确而有限的指令序列</li>
+          <li>同一个问题有多种算法，好坏差别巨大</li>
+          <li><strong>排序（Sorting）</strong>是经典算法问题：把一组数按大小排列</li>
+          <li><strong>冒泡排序（Bubble Sort）</strong>：相邻两个比较交换，简单但慢</li>
+          <li><strong>归并排序（Merge Sort）</strong>：分而治之，先拆再合，更快</li>
+          <li><strong>大O表示法（Big O Notation）</strong>：衡量算法效率，表示数据量增长时运算次数的增长趋势</li>
+          <li>O(n)：线性增长；O(n²)：平方增长（慢）；O(n log n)：归并排序的效率</li>
+          <li><strong>二分查找（Binary Search）</strong>：在有序数组中每次砍一半，O(log n)，非常快</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Algorithm</strong> 算法</span>
+          <span class="term"><strong>Big O Notation</strong> 大O表示法</span>
+          <span class="term"><strong>Bubble Sort</strong> 冒泡排序</span>
+          <span class="term"><strong>Merge Sort</strong> 归并排序</span>
+          <span class="term"><strong>Binary Search</strong> 二分查找</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">14</div>
+        <div class="ep-title">Data Structures — 数据结构</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>数据结构</strong>：组织和存储数据的方式，选对了结构算法才高效</li>
+          <li><strong>数组（Array）</strong>：连续存放，通过下标快速访问。缺点：插入/删除中间元素慢</li>
+          <li><strong>链表（Linked List）</strong>：每个元素存储下一个元素的地址，插入删除快，但访问要顺藤摸瓜</li>
+          <li><strong>栈（Stack）</strong>：后进先出（LIFO），像一摞盘子，最后放的最先拿</li>
+          <li><strong>队列（Queue）</strong>：先进先出（FIFO），像排队</li>
+          <li><strong>树（Tree）</strong>：有层级关系，根节点→子节点。<strong>二叉搜索树</strong>：左小右大，查找快</li>
+          <li><strong>图（Graph）</strong>：节点+边，表示网络关系（如社交网络、地图路线）</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Array</strong> 数组</span>
+          <span class="term"><strong>Linked List</strong> 链表</span>
+          <span class="term"><strong>Stack / Queue</strong> 栈 / 队列</span>
+          <span class="term"><strong>Tree</strong> 树</span>
+          <span class="term"><strong>Graph</strong> 图</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">15</div>
+        <div class="ep-title">Alan Turing — 艾伦·图灵</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>Alan Turing（1912-1954）是<strong>计算机科学之父</strong></li>
+          <li>1936年提出<strong>图灵机（Turing Machine）</strong>：一个理论模型，一条无限纸带+读写头+状态表</li>
+          <li>图灵机证明了：任何可计算的函数都可以用这台理论机器计算</li>
+          <li><strong>停机问题（Halting Problem）</strong>：图灵证明了不可能有一个通用算法判断任意程序是否会终止</li>
+          <li>二战期间在布莱切利园破译德国 <strong>Enigma 密码</strong>，加速了战争结束</li>
+          <li>1950年提出<strong>图灵测试（Turing Test）</strong>：如果人无法分辨对话者是人是机器，就认为机器有智能</li>
+          <li>Turing 因同性恋被英国政府迫害，41岁去世。2013年获得皇家赦免</li>
+          <li><strong>图灵奖（Turing Award）</strong>：计算机界的诺贝尔奖</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Turing Machine</strong> 图灵机</span>
+          <span class="term"><strong>Halting Problem</strong> 停机问题</span>
+          <span class="term"><strong>Enigma</strong> 恩尼格玛密码机</span>
+          <span class="term"><strong>Turing Test</strong> 图灵测试</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">16</div>
+        <div class="ep-title">Software Engineering — 软件工程</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>程序变复杂后，一个人写不完了 → 需要<strong>软件工程</strong>的方法管理复杂度</li>
+          <li><strong>面向对象编程（OOP）</strong>：把数据和处理数据的方法打包成「对象」</li>
+          <li>OOP 三大特性：<strong>封装</strong>（隐藏内部细节）、<strong>继承</strong>（子类复用父类代码）、<strong>多态</strong>（同一接口不同实现）</li>
+          <li><strong>设计模式（Design Patterns）</strong>：总结出的常见问题解决方案模板</li>
+          <li><strong>版本控制（Version Control）</strong>：Git 等工具跟踪代码修改历史</li>
+          <li><strong>测试（Testing）</strong>：单元测试、集成测试，保证代码正确性</li>
+          <li><strong>敏捷开发（Agile）</strong>：快速迭代、持续反馈，不是一次性做完</li>
+          <li><strong>文档（Documentation）</strong>：写清楚代码在做什么，方便团队协作</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>OOP</strong> 面向对象编程</span>
+          <span class="term"><strong>Encapsulation</strong> 封装</span>
+          <span class="term"><strong>Inheritance</strong> 继承</span>
+          <span class="term"><strong>Agile</strong> 敏捷开发</span>
+          <span class="term"><strong>Version Control</strong> 版本控制</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PART 4 ============ -->
+  <div id="part4" class="theme-4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div>
+        <h2>计算机系统与架构</h2>
+        <div class="section-sub">Ep 17-22 · 集成电路、操作系统、存储、文件系统</div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">17</div>
+        <div class="ep-title">Integrated Circuits & Moore's Law — 集成电路与摩尔定律</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>集成电路（Integrated Circuit, IC）</strong>：把多个晶体管做到一块芯片上</li>
+          <li>1958年，Jack Kilby（TI）和 Robert Noyce（Fairchild）分别独立发明IC</li>
+          <li>芯片用<strong>光刻（Photolithography）</strong>制造：用光在硅片上刻出电路图案</li>
+          <li><strong>摩尔定律（Moore's Law）</strong>：Gordon Moore 1965年观察到——芯片上的晶体管数量约每2年翻一倍</li>
+          <li>摩尔定律不是物理定律，是行业观察和自我实现的预言</li>
+          <li>晶体管越来越小 → 更快、更省电、更便宜</li>
+          <li>但物理极限逼近：原子级别，量子效应出现，摩尔定律正在放缓</li>
+          <li>现代芯片在指甲盖大小上集成<strong>数十亿</strong>个晶体管</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>IC</strong> 集成电路</span>
+          <span class="term"><strong>Photolithography</strong> 光刻</span>
+          <span class="term"><strong>Moore's Law</strong> 摩尔定律</span>
+          <span class="term"><strong>Silicon</strong> 硅</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">18</div>
+        <div class="ep-title">Operating Systems — 操作系统</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>操作系统（OS）</strong>：管理硬件资源、为程序提供运行环境的软件</li>
+          <li>早期的计算机没有OS——程序员直接操作硬件</li>
+          <li>OS 让<strong>多个程序同时运行</strong>（多任务），每个程序以为自己独占整个机器</li>
+          <li><strong>进程（Process）</strong>：正在运行的程序实例，OS给它分配内存和CPU时间</li>
+          <li><strong>内存管理</strong>：OS给每个进程分配独立的内存空间，互不干扰</li>
+          <li><strong>虚拟内存（Virtual Memory）</strong>：内存不够时，把部分数据挪到硬盘上</li>
+          <li><strong>设备驱动（Device Driver）</strong>：OS通过驱动程序统一管理不同硬件</li>
+          <li>常见OS：Windows、macOS、Linux、Android、iOS</li>
+          <li>Unix（1969年）影响深远，Linux 是开源版本</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>OS</strong> 操作系统</span>
+          <span class="term"><strong>Process</strong> 进程</span>
+          <span class="term"><strong>Multi-tasking</strong> 多任务</span>
+          <span class="term"><strong>Virtual Memory</strong> 虚拟内存</span>
+          <span class="term"><strong>Device Driver</strong> 设备驱动</span>
+          <span class="term"><strong>Unix / Linux</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">19</div>
+        <div class="ep-title">Memory & Storage — 内存与存储</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>存储分为<strong>易失性</strong>（断电丢数据）和<strong>非易失性</strong>（断电保留）</li>
+          <li><strong>RAM</strong>：易失性，快但断电丢失 → 临时工作区</li>
+          <li><strong>硬盘（Hard Drive）</strong>：非易失性，磁性记录，容量大但慢</li>
+          <li><strong>固态硬盘（SSD）</strong>：用闪存，比机械硬盘快很多</li>
+          <li><strong>存储层次（Memory Hierarchy）</strong>：
+            寄存器（最快最小）→ L1/L2/L3 缓存 → RAM → 硬盘/SSD（最慢最大）</li>
+          <li>越上层越快但容量越小、越贵；越下层越大但越慢</li>
+          <li>好的程序会尽量利用缓存，减少访问慢速存储</li>
+          <li><strong>磁带（Tape）</strong>至今仍在使用：超低成本大容量归档</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>RAM</strong> 内存</span>
+          <span class="term"><strong>Hard Drive</strong> 硬盘</span>
+          <span class="term"><strong>SSD</strong> 固态硬盘</span>
+          <span class="term"><strong>Cache Hierarchy</strong> 缓存层次</span>
+          <span class="term"><strong>Volatile / Non-volatile</strong> 易失/非易失</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">20</div>
+        <div class="ep-title">Files & File Systems — 文件与文件系统</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>文件（File）</strong>：把相关数据组织成一个有名字的整体，方便管理</li>
+          <li>文件有不同格式：<strong>格式 = 数据的组织方式</strong>（如 .txt, .wav, .bmp）</li>
+          <li><strong>文件系统（File System）</strong>：OS管理文件的方式，决定数据怎么存在硬盘上</li>
+          <li>底层把存储空间分成<strong>块（Block/Sector）</strong>，文件存在多个块中</li>
+          <li><strong>目录（Directory/Folder）</strong>：层级结构组织文件，像树状图</li>
+          <li>文件系统维护<strong>文件分配表</strong>：记录哪个文件存在哪些块里</li>
+          <li>常见文件系统：NTFS（Windows）、ext4（Linux）、APFS（macOS）、FAT32（U盘）</li>
+          <li><strong>碎片（Fragmentation）</strong>：文件分散在不连续的块中，影响性能，需要整理</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>File</strong> 文件</span>
+          <span class="term"><strong>File System</strong> 文件系统</span>
+          <span class="term"><strong>Block / Sector</strong> 块 / 扇区</span>
+          <span class="term"><strong>Directory</strong> 目录</span>
+          <span class="term"><strong>Fragmentation</strong> 碎片</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">21</div>
+        <div class="ep-title">Compression — 数据压缩</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>压缩</strong>：用更少的数据表示同样的信息，节省空间和传输时间</li>
+          <li><strong>无损压缩（Lossless）</strong>：解压后和原数据完全一样</li>
+          <li><strong>有损压缩（Lossy）</strong>：丢掉人感知不到的细节，解压后有损失（如JPEG图片、MP3音频）</li>
+          <li>无损压缩原理举例：<strong>游程编码（Run-Length Encoding）</strong>——"AAAAABBB" → "5A3B"</li>
+          <li><strong>霍夫曼编码（Huffman Coding）</strong>：高频数据用短编码，低频用长编码</li>
+          <li><strong>字典编码（Dictionary Coding）</strong>：把重复的模式替换为短引用（如 LZW）</li>
+          <li>JPEG 图片压缩：把图片分成小块，丢弃高频颜色变化（人眼不太敏感的部分）</li>
+          <li>压缩率与质量的权衡：压得越小，质量损失越大</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Lossless / Lossy</strong> 无损 / 有损</span>
+          <span class="term"><strong>Run-Length Encoding</strong> 游程编码</span>
+          <span class="term"><strong>Huffman Coding</strong> 霍夫曼编码</span>
+          <span class="term"><strong>JPEG / MP3</strong> 有损压缩格式</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">22</div>
+        <div class="ep-title">Keyboards & Command Line Interfaces — 键盘与命令行</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>人机交互从打孔卡片 → 打字机 → <strong>键盘</strong></li>
+          <li>键盘布局 <strong>QWERTY</strong>：最初是为了防止打字机卡键而设计的</li>
+          <li><strong>命令行界面（CLI, Command Line Interface）</strong>：用文字命令操作电脑</li>
+          <li>早期电脑只有命令行，效率高但学习门槛高</li>
+          <li><strong>终端（Terminal）</strong>：输入命令的文字界面</li>
+          <li><strong>Shell</strong>：终端背后解释和执行命令的程序（如 bash, zsh, PowerShell）</li>
+          <li>程序员至今仍大量使用命令行——比图形界面更灵活、更强大</li>
+          <li>常用命令：ls（列目录）、cd（切换目录）、mkdir（创建目录）、rm（删除）</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>QWERTY</strong> 键盘布局</span>
+          <span class="term"><strong>CLI</strong> 命令行界面</span>
+          <span class="term"><strong>Terminal</strong> 终端</span>
+          <span class="term"><strong>Shell</strong> 命令解释器</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PART 5 ============ -->
+  <div id="part5" class="theme-5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div>
+        <h2>图形与个人电脑</h2>
+        <div class="section-sub">Ep 23-27 · 屏幕、图形界面与个人电脑革命</div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">23</div>
+        <div class="ep-title">Screens & 2D Graphics — 屏幕与2D图形</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>最早的输出设备是打印机（打孔卡片→文字打印），后来有了<strong>CRT显示器</strong></li>
+          <li><strong>阴极射线管（CRT）</strong>：电子枪扫射荧光屏，逐行点亮像素</li>
+          <li>屏幕由<strong>像素（Pixel）</strong>组成，每个像素有颜色</li>
+          <li>颜色用 <strong>RGB</strong>（红绿蓝）三原色混合表示，每个颜色0-255</li>
+          <li><strong>位图（Bitmap）</strong>：逐像素存储图像信息，简单但文件大</li>
+          <li><strong>矢量图（Vector Graphics）</strong>：用数学公式描述图形（线、圆），放大不失真</li>
+          <li>早期电脑用<strong>字符显示</strong>：屏幕只显示文字，用ASCII字模渲染</li>
+          <li><strong>帧缓冲（Frame Buffer）</strong>：内存中存一整屏的像素数据，显示器持续刷新</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>CRT</strong> 阴极射线管</span>
+          <span class="term"><strong>Pixel</strong> 像素</span>
+          <span class="term"><strong>RGB</strong> 红绿蓝色彩模型</span>
+          <span class="term"><strong>Bitmap</strong> 位图</span>
+          <span class="term"><strong>Vector Graphics</strong> 矢量图</span>
+          <span class="term"><strong>Frame Buffer</strong> 帧缓冲</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">24</div>
+        <div class="ep-title">The Cold War and Consumerism — 冷战与消费主义</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>冷战时期的军事需求推动了计算机发展：SAGE防空系统、太空竞赛</li>
+          <li><strong>SAGE</strong>：美国防空系统，首次使用了<strong>实时图形显示</strong>和联网</li>
+          <li>磁芯存储器（Magnetic Core Memory）在SAGE中广泛使用</li>
+          <li>冷战推动了<strong>太空竞赛</strong>→ 需要更小型、更可靠的计算机 → 集成电路发展</li>
+          <li>阿波罗登月计划用的<strong>阿波罗制导计算机</strong>：最早使用集成电路的计算机之一</li>
+          <li>战后军用技术转民用：<strong>技术溢出效应</strong></li>
+          <li>消费主义推动大规模生产 → 电子产品越来越便宜 → <strong>个人电脑</strong>成为可能</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>SAGE</strong> 防空系统</span>
+          <span class="term"><strong>Magnetic Core Memory</strong> 磁芯存储器</span>
+          <span class="term"><strong>Apollo Guidance Computer</strong> 阿波罗制导计算机</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">25</div>
+        <div class="ep-title">The Personal Computer Revolution — 个人电脑革命</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>1970年代之前，电脑是大型机构才有的庞然大物</li>
+          <li><strong>Altair 8800（1975）</strong>：第一台个人电脑套件，需要自己组装</li>
+          <li>Paul Allen 和 Bill Gates 为 Altair 开发了 BASIC 解释器 → 创立 <strong>微软</strong></li>
+          <li><strong>Apple I（1976）</strong>：Steve Wozniak 设计，Steve Jobs 推销</li>
+          <li><strong>Apple II（1977）</strong>：第一台开箱即用的个人电脑，大获成功</li>
+          <li>IBM PC（1981）：IBM 进入个人电脑市场，使用微软的 DOS 操作系统</li>
+          <li>IBM PC 架构开放 → 大量<strong>兼容机</strong>出现 → 价格下降 → 普及</li>
+          <li>个人电脑让计算能力从机构走向个人 → 改变世界</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Altair 8800</strong> 第一台个人电脑</span>
+          <span class="term"><strong>Apple I / II</strong> 苹果电脑</span>
+          <span class="term"><strong>IBM PC</strong> IBM个人电脑</span>
+          <span class="term"><strong>Microsoft</strong> 微软</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">26</div>
+        <div class="ep-title">Graphical User Interfaces — 图形用户界面 (GUI)</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>图形用户界面（GUI）</strong>：用窗口、图标、菜单、鼠标操作电脑</li>
+          <li>1968年，Douglas Engelbart 的 <strong>"所有演示之母"（The Mother of All Demos）</strong>：
+            首次展示了鼠标、超文本、视频会议等概念</li>
+          <li>Xerox PARC 研究中心开发了 Alto（1973）：第一台有 GUI 的电脑，但太贵没上市</li>
+          <li>Steve Jobs 参观 Xerox PARC 后获得灵感 → 开发 <strong>Macintosh（1984）</strong></li>
+          <li>Macintosh 是第一台商业成功的 GUI 电脑</li>
+          <li>微软后来推出 <strong>Windows</strong>，把 GUI 带给 IBM 兼容机</li>
+          <li>GUI 让普通人也能用电脑 → 电脑从专业工具变成大众产品</li>
+          <li>WIMP 范式：<strong>Window, Icon, Menu, Pointer</strong> — 至今仍是主流</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>GUI</strong> 图形用户界面</span>
+          <span class="term"><strong>WIMP</strong> 窗口/图标/菜单/指针</span>
+          <span class="term"><strong>Xerox PARC</strong> 施乐研究中心</span>
+          <span class="term"><strong>Macintosh</strong> 麦金塔</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">27</div>
+        <div class="ep-title">3D Graphics — 3D图形</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>2D图形不够用 → 需要<strong>3D图形</strong>来表示三维世界</li>
+          <li>3D图形的核心：用<strong>网格（Mesh）</strong>定义物体形状——由三角形组成</li>
+          <li>每个三角形有<strong>顶点（Vertex）</strong>，顶点有XYZ三个坐标</li>
+          <li><strong>投影（Projection）</strong>：把3D坐标映射到2D屏幕上（透视投影：近大远小）</li>
+          <li><strong>着色（Shading）</strong>：根据光源方向计算每个面的颜色深浅</li>
+          <li><strong>纹理映射（Texture Mapping）</strong>：把2D图片贴到3D表面上</li>
+          <li><strong>渲染（Rendering）</strong>：把3D场景转换为2D图像的过程</li>
+          <li><strong>GPU（图形处理器）</strong>：专门做3D计算的芯片，比CPU更适合并行运算</li>
+          <li>3D不仅用于游戏，还用于电影特效、建筑设计、医学影像等</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Mesh</strong> 网格</span>
+          <span class="term"><strong>Vertex</strong> 顶点</span>
+          <span class="term"><strong>Projection</strong> 投影</span>
+          <span class="term"><strong>Shading</strong> 着色</span>
+          <span class="term"><strong>Texture Mapping</strong> 纹理映射</span>
+          <span class="term"><strong>GPU</strong> 图形处理器</span>
+          <span class="term"><strong>Rendering</strong> 渲染</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PART 6 ============ -->
+  <div id="part6" class="theme-6">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <div>
+        <h2>网络与互联网</h2>
+        <div class="section-sub">Ep 28-30 · 从局域网到万维网</div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">28</div>
+        <div class="ep-title">Computer Networks — 计算机网络</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>计算机网络</strong>：多台计算机连接起来，互相传输数据</li>
+          <li>最早的网络是军事和学术用途：<strong>ARPANET（1969）</strong>，美国国防部的项目</li>
+          <li>连接方式：
+            <strong>局域网（LAN）</strong>覆盖小范围（如办公室），
+            <strong>广域网（WAN）</strong>覆盖大范围（如跨城市）</li>
+          <li>数据传输方式：
+            <strong>电路交换</strong>（电话式，独占线路）vs
+            <strong>分组交换（Packet Switching）</strong>（数据切小包，共享线路）</li>
+          <li>分组交换更高效：多个通信共享同一条线路</li>
+          <li>每个数据包有<strong>目标地址</strong>，路由器负责转发到正确方向</li>
+          <li><strong>IP地址</strong>：每台电脑在网络上的唯一地址</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>ARPANET</strong> 早期网络</span>
+          <span class="term"><strong>LAN / WAN</strong> 局域网 / 广域网</span>
+          <span class="term"><strong>Packet Switching</strong> 分组交换</span>
+          <span class="term"><strong>Router</strong> 路由器</span>
+          <span class="term"><strong>IP Address</strong> IP地址</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">29</div>
+        <div class="ep-title">The Internet — 互联网</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>互联网（Internet）</strong>：把全世界的网络连在一起的「网络的网络」</li>
+          <li>互联网使用<strong>分层协议</strong>，每层负责不同的功能</li>
+          <li><strong>IP协议（Internet Protocol）</strong>：负责数据包的寻址和路由</li>
+          <li><strong>TCP协议（Transmission Control Protocol）</strong>：保证数据完整、按顺序到达</li>
+          <li>TCP 把大文件切小，编号，接收端重组。丢了就重传</li>
+          <li><strong>DNS（Domain Name System）</strong>：把域名（如 google.com）翻译成IP地址</li>
+          <li><strong>ISP（Internet Service Provider）</strong>：互联网服务提供商，连接你和互联网</li>
+          <li>互联网没有中心控制——这是设计上的优点：健壮、抗毁</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Internet</strong> 互联网</span>
+          <span class="term"><strong>TCP/IP</strong> 核心协议</span>
+          <span class="term"><strong>DNS</strong> 域名系统</span>
+          <span class="term"><strong>ISP</strong> 互联网服务提供商</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">30</div>
+        <div class="ep-title">The World Wide Web — 万维网</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>万维网（WWW）≠ 互联网</strong>：互联网是基础设施，万维网是跑在互联网上的应用之一</li>
+          <li>1989年，Tim Berners-Lee 在 CERN（欧洲核子研究中心）发明了WWW</li>
+          <li>三个核心组件：
+            <strong>URL</strong>（统一资源定位器，网址）、
+            <strong>HTTP</strong>（超文本传输协议，传输网页）、
+            <strong>HTML</strong>（超文本标记语言，描述网页内容）</li>
+          <li><strong>网页（Web Page）</strong>：用HTML写的文档，可以包含文字、图片、链接</li>
+          <li><strong>超链接（Hyperlink）</strong>：从一个网页跳到另一个——这是"网"的核心</li>
+          <li><strong>浏览器（Browser）</strong>：读取HTML并渲染成可视化网页的程序。第一个浏览器叫 WorldWideWeb</li>
+          <li>1990年代初网页还是纯文本，后来有了图片、CSS样式、JavaScript交互</li>
+          <li>Web 的发展：Web 1.0（只读）→ Web 2.0（用户生成内容、社交）→ 移动互联网</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>WWW</strong> 万维网</span>
+          <span class="term"><strong>URL</strong> 统一资源定位器</span>
+          <span class="term"><strong>HTTP</strong> 超文本传输协议</span>
+          <span class="term"><strong>HTML</strong> 超文本标记语言</span>
+          <span class="term"><strong>Hyperlink</strong> 超链接</span>
+          <span class="term"><strong>Browser</strong> 浏览器</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PART 7 ============ -->
+  <div id="part7" class="theme-7">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <div>
+        <h2>计算机安全</h2>
+        <div class="section-sub">Ep 31-33 · 网络安全、黑客攻击与密码学</div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">31</div>
+        <div class="ep-title">Cybersecurity — 网络安全</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>CIA三原则</strong>：
+            <strong>C</strong>onfidentiality（机密性，数据不被未授权的人看到）、
+            <strong>I</strong>ntegrity（完整性，数据不被篡改）、
+            <strong>A</strong>vailability（可用性，服务不被中断）</li>
+          <li><strong>身份验证（Authentication）</strong>：证明你是谁。三种方式：
+            <strong>你知道什么</strong>（密码）、
+            <strong>你有什么</strong>（手机/密钥）、
+            <strong>你是什么</strong>（指纹/面容）</li>
+          <li><strong>双因素认证（2FA）</strong>：两种方式组合验证，更安全</li>
+          <li><strong>访问控制（Access Control）</strong>：决定了你能做什么、能看什么</li>
+          <li><strong>沙箱（Sandbox）</strong>：给程序一个隔离的运行环境，限制它能做的事</li>
+          <li>安全是<strong>层层防御</strong>，没有单一银弹</li>
+          <li>安全 weakest link 原则：系统安全性取决于最薄弱的环节</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>CIA Triad</strong> 安全三原则</span>
+          <span class="term"><strong>Authentication</strong> 身份验证</span>
+          <span class="term"><strong>2FA</strong> 双因素认证</span>
+          <span class="term"><strong>Access Control</strong> 访问控制</span>
+          <span class="term"><strong>Sandbox</strong> 沙箱</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">32</div>
+        <div class="ep-title">Hackers & Cyber Attacks — 黑客与网络攻击</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>黑客原意是「精通技术的人」，现在多指未经授权入侵系统的人</li>
+          <li><strong>社会工程（Social Engineering）</strong>：骗人而非攻破技术。如钓鱼邮件假冒网站</li>
+          <li><strong>木马（Trojan）</strong>：伪装成正常程序的恶意软件</li>
+          <li><strong>病毒（Virus）</strong>：会自我复制，感染其他文件</li>
+          <li><strong>蠕虫（Worm）</strong>：不需要宿主，自动通过网络传播</li>
+          <li><strong>勒索软件（Ransomware）</strong>：加密你的文件，要求赎金</li>
+          <li><strong>DDoS攻击</strong>：用大量请求淹没服务器，使其无法提供正常服务</li>
+          <li><strong>SQL注入</strong>：在输入框中注入恶意SQL代码，骗取数据库数据</li>
+          <li><strong>零日漏洞（Zero-day）</strong>：软件厂商还不知道的漏洞，特别危险</li>
+          <li>防御手段：杀毒软件、防火墙、入侵检测、保持更新</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Social Engineering</strong> 社会工程</span>
+          <span class="term"><strong>Phishing</strong> 钓鱼</span>
+          <span class="term"><strong>Trojan / Virus / Worm</strong> 木马/病毒/蠕虫</span>
+          <span class="term"><strong>Ransomware</strong> 勒索软件</span>
+          <span class="term"><strong>DDoS</strong> 分布式拒绝服务</span>
+          <span class="term"><strong>Zero-day</strong> 零日漏洞</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">33</div>
+        <div class="ep-title">Cryptography — 密码学</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>密码学</strong>：把信息变成只有授权人能读懂的形式</li>
+          <li><strong>加密（Encryption）</strong>：明文 → 密文；<strong>解密（Decryption）</strong>：密文 → 明文</li>
+          <li><strong>对称加密</strong>：加密和解密用<strong>同一个密钥</strong>。快，但密钥怎么安全分享给对方是难题</li>
+          <li><strong>非对称加密（公钥加密）</strong>：用<strong>一对密钥</strong>——公钥（公开）和私钥（保密）</li>
+          <li>用公钥加密 → 只有私钥能解密；用私钥签名 → 公钥可以验证</li>
+          <li>解决了密钥分发问题，是互联网安全的基础</li>
+          <li><strong>数字签名</strong>：用私钥「签名」，任何人用公钥验证真伪</li>
+          <li><strong>哈希函数（Hash Function）</strong>：把任意数据变成固定长度的「指纹」。不可逆，用于验证数据完整性</li>
+          <li>常见算法：AES（对称）、RSA（非对称）、SHA-256（哈希）</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Encryption / Decryption</strong> 加密 / 解密</span>
+          <span class="term"><strong>Symmetric Key</strong> 对称密钥</span>
+          <span class="term"><strong>Public / Private Key</strong> 公钥 / 私钥</span>
+          <span class="term"><strong>Digital Signature</strong> 数字签名</span>
+          <span class="term"><strong>Hash Function</strong> 哈希函数</span>
+          <span class="term"><strong>AES / RSA</strong> 常见算法</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PART 8 ============ -->
+  <div id="part8" class="theme-8">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <div>
+        <h2>人工智能与机器人</h2>
+        <div class="section-sub">Ep 34-37 · 机器学习、计算机视觉、自然语言处理与机器人</div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">34</div>
+        <div class="ep-title">Machine Learning & AI — 机器学习与人工智能</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>人工智能（AI）</strong>：让机器表现出类似人类的智能</li>
+          <li><strong>机器学习（ML）</strong>：AI的一个子领域，不从规则出发，而是从数据中<strong>学习规律</strong></li>
+          <li><strong>监督学习（Supervised Learning）</strong>：给数据+标签，让模型学会输入→输出的映射。如：给一堆猫狗照片+标签，学会分类</li>
+          <li><strong>无监督学习（Unsupervised Learning）</strong>：给数据没有标签，让模型自己发现模式（聚类）</li>
+          <li><strong>强化学习（Reinforcement Learning）</strong>：通过试错+奖励/惩罚学习策略</li>
+          <li><strong>决策树（Decision Tree）</strong>：树状判断，简单直观的分类方法</li>
+          <li><strong>神经网络（Neural Network）</strong>：模仿大脑神经元的计算模型，多层网络可以学习复杂模式</li>
+          <li><strong>深度学习（Deep Learning）</strong>：多层神经网络，近年来大热</li>
+          <li>训练数据越多，模型通常越好——数据是AI的「燃料」</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>AI / ML</strong> 人工智能 / 机器学习</span>
+          <span class="term"><strong>Supervised Learning</strong> 监督学习</span>
+          <span class="term"><strong>Neural Network</strong> 神经网络</span>
+          <span class="term"><strong>Deep Learning</strong> 深度学习</span>
+          <span class="term"><strong>Training Data</strong> 训练数据</span>
+          <span class="term"><strong>Reinforcement Learning</strong> 强化学习</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">35</div>
+        <div class="ep-title">Computer Vision — 计算机视觉</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>计算机视觉</strong>：让计算机「看懂」图片和视频内容</li>
+          <li>难点：人类一眼看懂的图像，计算机看到的只是一堆数字（像素值）</li>
+          <li>早期方法：<strong>边缘检测（Edge Detection）</strong>——找出像素值剧烈变化的地方</li>
+          <li>然后把线条组合成形状，再做识别</li>
+          <li>现代方法：用<strong>卷积神经网络（CNN）</strong>，自动学习图像特征</li>
+          <li>应用场景：人脸识别、自动驾驶（识别行人/车辆/路标）、医学影像、质检</li>
+          <li>训练方式：给大量标注图片，让模型学会区分不同类别</li>
+          <li>挑战：光照变化、遮挡、角度、背景干扰</li>
+          <li>人脸识别的伦理问题：隐私、监控、偏见</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Computer Vision</strong> 计算机视觉</span>
+          <span class="term"><strong>Edge Detection</strong> 边缘检测</span>
+          <span class="term"><strong>CNN</strong> 卷积神经网络</span>
+          <span class="term"><strong>Face Recognition</strong> 人脸识别</span>
+          <span class="term"><strong>Autonomous Driving</strong> 自动驾驶</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">36</div>
+        <div class="ep-title">Natural Language Processing — 自然语言处理</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li><strong>自然语言处理（NLP）</strong>：让计算机理解、生成人类语言</li>
+          <li>难点：语言有歧义、有上下文、有隐喻，不是简单的规则可以覆盖</li>
+          <li><strong>语音识别（Speech Recognition）</strong>：把语音转成文字</li>
+          <li><strong>语法分析</strong>：理解句子结构（主语、谓语、宾语）</li>
+          <li><strong>语义分析</strong>：理解句子的含义</li>
+          <li>早期方法：规则系统（写大量语法规则），太死板</li>
+          <li>统计方法：用大量文本统计词的共现频率</li>
+          <li>现代方法：<strong>大语言模型（LLM）</strong>，用深度学习从海量文本中学习语言规律</li>
+          <li>应用：翻译、语音助手、聊天机器人、自动写作</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>NLP</strong> 自然语言处理</span>
+          <span class="term"><strong>Speech Recognition</strong> 语音识别</span>
+          <span class="term"><strong>Semantic Analysis</strong> 语义分析</span>
+          <span class="term"><strong>LLM</strong> 大语言模型</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">37</div>
+        <div class="ep-title">Robots — 机器人</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>机器人 = 传感器 + 大脑（计算机） + 执行器（电机/机械臂）</li>
+          <li>最早的机器人概念来自科幻（如《大都会》中的机器人Maria，1927年）</li>
+          <li><strong>传感器（Sensor）</strong>：机器人的「感官」——摄像头、雷达、触觉、距离传感器等</li>
+          <li><strong>执行器（Actuator）</strong>：机器人的「肌肉」——电机、液压、气动</li>
+          <li><strong>嵌入式系统</strong>：机器人的大脑通常是嵌入式计算机，小而省电</li>
+          <li>工厂机器人：精准重复，如焊接、喷漆、组装</li>
+          <li>移动机器人：自动驾驶车、配送机器人、无人机</li>
+          <li>挑战：真实世界复杂多变，不像虚拟环境那样可控</li>
+          <li>未来的 <strong>通用机器人</strong>：能像人一样处理各种任务，目前还很远</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Sensor</strong> 传感器</span>
+          <span class="term"><strong>Actuator</strong> 执行器</span>
+          <span class="term"><strong>Embedded System</strong> 嵌入式系统</span>
+          <span class="term"><strong>Autonomous</strong> 自主</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PART 9 ============ -->
+  <div id="part9" class="theme-9">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <div>
+        <h2>人机交互与未来</h2>
+        <div class="section-sub">Ep 38-40 · 计算机心理学、教育技术与未来展望</div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">38</div>
+        <div class="ep-title">Psychology of Computing — 计算心理学</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>计算机不只是技术问题，也是<strong>人的问题</strong>——界面怎么设计才能让人用得舒服</li>
+          <li><strong>人机交互（HCI, Human-Computer Interaction）</strong>：研究人和计算机之间的交互体验</li>
+          <li><strong>可用性（Usability）</strong>：产品好不好用、学习门槛高不高</li>
+          <li><strong>认知负荷</strong>：人脑同时处理信息的能力有限，界面越复杂越容易出错</li>
+          <li>好的设计应该<strong>减少认知负担</strong>：直观、一致、给反馈</li>
+          <li>设计原则：一致性（类似操作有类似效果）、反馈（操作后有回应）、可见性（选项都看得到）</li>
+          <li><strong>情感化设计</strong>：好的设计不只是好用，也让人愉悦</li>
+          <li>技术最终是<strong>为人服务</strong>的，不是反过来</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>HCI</strong> 人机交互</span>
+          <span class="term"><strong>Usability</strong> 可用性</span>
+          <span class="term"><strong>Cognitive Load</strong> 认知负荷</span>
+          <span class="term"><strong>Affordance</strong> 示能性</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">39</div>
+        <div class="ep-title">Educational Technology — 教育技术</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>计算机在教育中的应用：从打孔卡片教学到在线学习</li>
+          <li><strong>PLATO系统（1960年代）</strong>：最早的计算机辅助教学系统</li>
+          <li><strong>智能辅导系统（ITS）</strong>：根据学生表现个性化调整教学内容</li>
+          <li><strong>自适应学习</strong>：系统分析学生薄弱点，推送对应内容</li>
+          <li>计算机支持的协作学习：在线讨论、协作编辑</li>
+          <li><strong>慕课（MOOC）</strong>：大规模开放在线课程，让优质教育触达全球</li>
+          <li><strong>游戏化学习</strong>：用积分、关卡、成就等游戏元素提升学习动力</li>
+          <li>教育的核心仍然是<strong>人的参与</strong>——技术是工具，不是替代</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>EdTech</strong> 教育技术</span>
+          <span class="term"><strong>ITS</strong> 智能辅导系统</span>
+          <span class="term"><strong>Adaptive Learning</strong> 自适应学习</span>
+          <span class="term"><strong>MOOC</strong> 大规模在线课程</span>
+          <span class="term"><strong>Gamification</strong> 游戏化</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-card">
+      <div class="ep-head">
+        <div class="ep-num">40</div>
+        <div class="ep-title">The Future of Computing — 计算的未来</div>
+      </div>
+      <div class="ep-body">
+        <h4>核心要点</h4>
+        <ul>
+          <li>回顾：从算盘到晶体管到集成电路到个人电脑到互联网到AI——计算机的发展越来越快</li>
+          <li>当前趋势与未来方向：</li>
+          <li><strong>量子计算机（Quantum Computing）</strong>：利用量子叠加和纠缠，理论上可以同时探索大量可能性。适合特定问题（如密码破解、药物模拟），但还在实验阶段</li>
+          <li><strong>脑机接口（Brain-Computer Interface）</strong>：直接连接大脑和计算机，可能让瘫痪者控制设备，甚至扩展人类认知</li>
+          <li><strong>物联网（IoT）</strong>：万物互联——冰箱、汽车、灯泡都连上网</li>
+          <li><strong>边缘计算</strong>：在设备本地做计算，减少延迟，保护隐私</li>
+          <li><strong>AI无处不在</strong>：AI将融入所有工具，像电力一样成为基础设施</li>
+          <li><strong>伦理与责任</strong>：技术越强大，越需要思考——隐私、公平、偏见、就业、自主性</li>
+          <li>技术从来不是中立的——设计它的人决定了它的方向</li>
+          <li>Carrie Anne 的结语：理解计算机科学的人越多，未来越值得期待</li>
+        </ul>
+        <h4>关键术语</h4>
+        <div class="terms">
+          <span class="term"><strong>Quantum Computing</strong> 量子计算</span>
+          <span class="term"><strong>Brain-Computer Interface</strong> 脑机接口</span>
+          <span class="term"><strong>IoT</strong> 物联网</span>
+          <span class="term"><strong>Edge Computing</strong> 边缘计算</span>
+          <span class="term"><strong>AI Ethics</strong> AI伦理</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box" style="margin-top: 40px;">
+    <strong>恭喜！</strong>你已经看完了全部40集的笔记框架。建议的做法：先快速浏览一遍这些笔记，知道有哪些概念。然后看视频时对照笔记，看完一集就在笔记里补充自己的理解。不用全部记住——有个印象，遇到的时候知道在哪查就行。
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>Crash Course Computer Science · 主讲 Carrie Anne Philbin</p>
+  <p>课程地址：<a href="https://thecrashcourse.com/topic/computerscience/" target="_blank">thecrashcourse.com</a> · B站搜「Crash Course 计算机科学」有中文字幕</p>
+</div>
+
+</body>
+</html>
